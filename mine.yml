@@ -1,0 +1,17 @@
+name: mine
+channels:
+  - conda-forge
+  - nodefaults
+  - pytorch
+dependencies:
+  - python
+  - ipython
+  - ipykernel
+  - numpy
+  - pandas
+  - scipy
+  - pytorch::pytorch
+  - matplotlib
+  - pip
+  - pip:
+    - notebook
