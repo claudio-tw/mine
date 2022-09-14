@@ -10,9 +10,10 @@ from mine.samples.base import Sample
 
 class Transformation(Enum):
     ID = 0
-    SIN = 1
-    COS = 2
-    X2 = 3
+    X2 = 1
+    SIN = 2
+    COS = 3
+    COSSIN = 4
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
         return _transformation_to_numpy_callable[self](x)
@@ -20,8 +21,9 @@ class Transformation(Enum):
 
 _transformation_to_numpy_callable:  Dict[Transformation, Callable[[np.ndarray], np.ndarray]] = {
     Transformation.ID: lambda x: x,
-    Transformation.SIN: lambda x: np.sin(np.pi * x / 2.),
-    Transformation.COS: lambda x: np.cos(np.pi * x / 2.),
+    Transformation.SIN: lambda x: (np.pi / 2.) * np.sin(np.pi * x / 2.),
+    Transformation.COS: lambda x: (np.pi / 2.) * np.cos(np.pi * x / 2.),
+    Transformation.COSSIN: lambda x: np.pi * np.cos(np.pi * x / 2.) * np.sin(np.pi * x / 2.),
     Transformation.X2: np.square,
 }
 
@@ -67,17 +69,16 @@ class Signal(Sample):
             high=h,
             size=(number_of_samples, dim_x),
         )
-        y1: np.ndarray = (
+        y1: np.ndarray = \
             transformation(np.random.uniform(
                 low=l,
                 high=h,
                 size=(number_of_samples, dim_x),
-            )) +
+            )) +\
             np.random.normal(
                 scale=noise_std,
                 size=(number_of_samples, dim_y)
             )
-        )
         samples: Tensor = torch.from_numpy(
             np.concatenate([xy, x1, y1], axis=1),
         )
@@ -88,6 +89,12 @@ class Signal(Sample):
         self.dim_y: int = dim_y
         self.noise_variance: float = noise_variance
         self.number_of_samples: int = number_of_samples
+        self.empirical_avg_xy: np.ndarray = np.mean(xy, axis=0)
+        self.empirical_cov_xy: np.ndarray = np.cov(xy, rowvar=False)
+        self.empirical_avg_x: np.ndarray = np.mean(x1, axis=0)
+        self.empirical_cov_x: np.ndarray = np.cov(x1, rowvar=False)
+        self.empirical_avg_y: np.ndarray = np.mean(y1, axis=0)
+        self.empirical_cov_y: np.ndarray = np.cov(y1, rowvar=False)
 
     @staticmethod
     def from_(sig):
