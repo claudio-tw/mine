@@ -1,11 +1,12 @@
-from typing import Tuple, Optional
+from typing import Optional
 import torch
 from torch import Tensor
 import numpy as np
 from scipy.stats import multivariate_normal
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Tensor
 from dataclasses import dataclass
+from mine.samples.base import Sample
 
 
 @dataclass
@@ -16,8 +17,7 @@ class NormalSampleInput():
     number_of_samples: int = 1000000
 
 
-class NormalSample(Dataset):
-
+class NormalSample(Sample):
     def __init__(self,
                  ns_input: NormalSampleInput,
                  ):
@@ -73,17 +73,6 @@ class NormalSample(Dataset):
         self.empirical_cov_y: np.ndarray = np.atleast_2d(
             np.cov(y, rowvar=False)
         )
-
-    def __len__(self) -> int:
-        return self.number_of_samples
-
-    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
-        i: int = idx % self.number_of_samples
-        d: int = self.dim
-        sample: Tensor = self.samples[i, :]
-        xy: Tensor = sample[:d]
-        x_y: Tensor = sample[d:]
-        return xy, x_y
 
     @staticmethod
     def from_(ns):

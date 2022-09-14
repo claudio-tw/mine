@@ -1,31 +1,8 @@
 from typing import Tuple, Optional
 import numpy as np
 from mine.mutual_information import MutualInformation
+from mine.tests import base
 from mine.samples import normal
-
-
-def model(
-        ns: normal.NormalSample,
-        empirical_sample_size: int = 1000,
-        optimizer=None,
-        learning_rate: float = 1e-3,
-        batch_size: int = 1000,
-        num_of_epochs: int = 5,
-        verbose: bool = False,
-) -> MutualInformation:
-    mi: MutualInformation = MutualInformation(
-        dataset=ns,
-        dim=ns.dim,
-        empirical_sample_size=empirical_sample_size,
-    )
-    mi.train(
-        optimizer=optimizer,
-        learning_rate=learning_rate,
-        batch_size=batch_size,
-        num_of_epochs=num_of_epochs,
-        verbose=verbose,
-    )
-    return mi
 
 
 def experiment(
@@ -38,8 +15,9 @@ def experiment(
         verbose: bool = False,
 ) -> Tuple[normal.NormalSample, MutualInformation]:
     ns: normal.NormalSample = normal.NormalSample(ns_input)
-    mi: MutualInformation = model(
-        ns=ns,
+    mi: MutualInformation = base.experiment(
+        dataset=ns,
+        dim=ns.dim,
         empirical_sample_size=empirical_sample_size,
         optimizer=optimizer,
         learning_rate=learning_rate,
