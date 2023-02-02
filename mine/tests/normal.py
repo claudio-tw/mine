@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List, Dict
 import numpy as np
 from mine.mutual_information import MutualInformation
 from mine.tests import base
@@ -97,6 +97,67 @@ def multivariates(
         num_of_epochs=num_of_epochs,
         verbose=verbose,
     )
+
+
+def smile(
+        grid_size: int = 10,
+        number_of_samples: int = 1000000,
+        insample_empirical_sample_size: int = 2000,
+        outsample_empirical_sample_size: int = 7500,
+        optimizer=None,
+        learning_rate: float = 1e-3,
+        batch_size: int = 2000,
+        num_of_epochs: int = 5,
+        num_evaluations: int = 30,
+        verbose: bool = False,
+) -> List[Dict[str, float]]:
+    rho = np.linspace(-.95, .95, num=grid_size)
+    _smile: List[Dict[str, float]] = []
+    for rho_i in rho:
+        print(f'\n\n\nCorrelation: {rho_i}\n')
+        sigma = np.array(
+            [[1., rho_i],
+             [rho_i, 1.]]
+        )
+        training_sample, insample_mi = multivariates(
+            sigma=sigma,
+            number_of_samples=number_of_samples,
+            empirical_sample_size=insample_empirical_sample_size,
+            optimizer=optimizer,
+            learning_rate=learning_rate,
+            batch_size=batch_size,
+            num_of_epochs=num_of_epochs,
+            verbose=verbose,
+        )
+        test_sample = normal.NormalSample.from_(training_sample)
+        outsample_mi = MutualInformation(
+            dataset=test_sample,
+            test_function=insample_mi.test_function,
+            empirical_sample_size=outsample_empirical_sample_size,
+        )
+        exact_training_mi = training_sample.mutual_information()
+        empirical_training_mi = training_sample.mutual_information(
+            empirical=True)
+        exact_test_mi = test_sample.mutual_information()
+        empirical_test_mi = test_sample.mutual_information(empirical=True)
+        insample_estimated_mi = np.mean(
+            [insample_mi() for _ in range(num_evaluations)])
+        outsample_estimated_mi = np.mean(
+            [outsample_mi() for _ in range(num_evaluations)])
+        res: Dict[str, float] = dict(
+            correlation=rho_i,
+            exact_training_mi=exact_training_mi,
+            empirical_training_mi=empirical_training_mi,
+            exact_test_mi=exact_test_mi,
+            empirical_test_mi=empirical_test_mi,
+            insample_estimated_mi=insample_estimated_mi,
+            outsample_estimated_mi=outsample_estimated_mi,
+        )
+        for k, v in res.items():
+            print(f'{k}: {v}')
+        print('\n')
+        _smile.append(res)
+    return _smile
 
 
 def totally_correlated_univariates(
