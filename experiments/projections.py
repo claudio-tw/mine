@@ -2,7 +2,7 @@
 from typing import Tuple, Optional, List, Dict
 import numpy as np
 from mine.mutual_information import MutualInformation
-from mine.tests import base
+from experiments import base
 from mine.samples import projections
 
 

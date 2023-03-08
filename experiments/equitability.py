@@ -1,6 +1,6 @@
 from typing import Tuple,  Dict
 from mine.mutual_information import MutualInformation
-from mine.tests import base
+from experiments import base
 from mine.samples import signal
 
 

@@ -1,7 +1,7 @@
 from typing import Tuple, Optional, List, Dict
 import numpy as np
 from mine.mutual_information import MutualInformation
-from mine.tests import base
+from experiments import base
 from mine.samples import normal
 
 
@@ -118,11 +118,12 @@ def smile(
         num_of_epochs: int = 5,
         num_evaluations: int = 30,
         verbose: bool = False,
+        device:str = 'cpu',
 ) -> List[Dict[str, float]]:
     rho = np.linspace(-.95, .95, num=grid_size)
     _smile: List[Dict[str, float]] = []
     for rho_i in rho:
-        print(f'\n\n\nCorrelation: {rho_i}\n')
+        print('\n\n\nCorrelation: {:.4f}\n'.format(rho_i))
         sigma = np.array(
             [[1., rho_i],
              [rho_i, 1.]]
@@ -136,6 +137,7 @@ def smile(
             batch_size=batch_size,
             num_of_epochs=num_of_epochs,
             verbose=verbose,
+            device=device,
         )
         test_sample = normal.NormalSample.from_(training_sample)
         outsample_mi = MutualInformation(
