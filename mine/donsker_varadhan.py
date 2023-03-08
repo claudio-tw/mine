@@ -43,14 +43,14 @@ def train(
         verbose: bool = True,
 ) -> TestFunction:
     optimizer = optimizer or torch.optim.SGD(f.parameters(), lr=learning_rate)
-    size: int = len(dataloader.dataset)
+    size: int = len(dataloader)
     for batch, (x, y) in enumerate(dataloader):
         loss = - V(x, y, f)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        if verbose and batch % 100 == 0:
-            loss, current = loss.item(), batch * len(x)
-            print(f'loss: {loss:>7f} [{current:>5d}/{size:>5d}]')
+        if verbose and (batch % 10 == 0):
+            loss= loss.item()
+            print(f'loss: {loss:>7f} [{batch:>5d}/{size:>5d}]')
     return f

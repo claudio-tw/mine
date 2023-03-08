@@ -12,14 +12,21 @@ class MutualInformation:
                  dim: int = 1,
                  dtype=torch.float64,
                  empirical_sample_size: int = 1,
+                 device:str = 'cpu',
                  ):
         self.dataset: Dataset = dataset
-        self.test_function: dv.TestFunction = (
+        test_function: dv.TestFunction = (
             test_function or dv.TestFunction(
                 dim,
                 dtype=dtype,
             )
         )
+        test_function = test_function.to(device)
+        self.test_function = test_function
+#         self.test_function = torch.jit.trace(
+#                 test_function,
+#                 torch.rand(100, dim, dtype=dtype)
+#         )
         assert empirical_sample_size > 0
         self.sampler: DataLoader = DataLoader(
             self.dataset,
@@ -39,8 +46,10 @@ class MutualInformation:
               num_of_epochs: int = 1,
               verbose: bool = True,
               ):
+        self.test_function.train()
         for epoch in range(num_of_epochs):
-            print(f'\n\nEPOCH: {epoch}\n')
+            if verbose:
+                print(f'\n\nEPOCH: {epoch}\n')
             dl: DataLoader = DataLoader(
                 self.dataset,
                 batch_size=batch_size,
@@ -54,6 +63,7 @@ class MutualInformation:
                 verbose=verbose,
             )
             self.test_function = f_star
+        self.test_function.eval()
 
     def __call__(self,
                  xy: Optional[Tensor] = None,
@@ -71,5 +81,7 @@ class MutualInformation:
         else:
             product = x_y
         f: dv.TestFunction = self.test_function
-        v: Tensor = dv.V(joint, product, f)
+        f.eval()
+        with torch.no_grad():
+            v: Tensor = dv.V(joint, product, f)
         return v.item()

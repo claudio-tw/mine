@@ -4,9 +4,9 @@ from torch.utils.data import Dataset
 
 
 class Sample(Dataset):
-    def __init__(self, samples: Tensor, dim: int):
-        self.samples: Tensor = samples
-        self.number_of_samples = samples.size(0)
+    def __init__(self, samples: Tensor, dim: int, device: str = 'cpu'):
+        self.samples: Tensor = samples.to(device)
+        self.number_of_samples:int = samples.size(0)
         self.dim: int = dim
 
     def __len__(self) -> int:

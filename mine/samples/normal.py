@@ -15,6 +15,7 @@ class NormalSampleInput():
     dim_x: Optional[int] = None
     dim_y: Optional[int] = None
     number_of_samples: int = 1000000
+    device:str = 'cpu'
 
 
 class NormalSample(Sample):
@@ -58,11 +59,12 @@ class NormalSample(Sample):
         if y.shape == (1, number_of_samples):
             y = y.T
         assert y.shape == (number_of_samples, dim_y)
-        self.samples: Tensor = torch.from_numpy(
+        samples: Tensor = torch.from_numpy(
             np.concatenate(
                 [xy, x, y], axis=1,
             )
         )
+        self.samples: Tensor = samples.to(ns_input.device)
         assert self.samples.size() == torch.Size((number_of_samples, 2*self.dim))
         self.number_of_samples: int = number_of_samples
         self.exact_cov: np.ndarray = cov_xy

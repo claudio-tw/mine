@@ -1,1 +1,1 @@
-from . import base, normal, equitability  # NOQA
+from . import base, normal, equitability, projections  # NOQA

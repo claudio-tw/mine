@@ -11,11 +11,13 @@ def experiment(
         batch_size: int = 1000,
         num_of_epochs: int = 5,
         verbose: bool = False,
+        device:str = 'cpu',
 ) -> MutualInformation:
     mi: MutualInformation = MutualInformation(
         dataset=dataset,
         dim=dim,
         empirical_sample_size=empirical_sample_size,
+        device=device,
     )
     mi.train(
         optimizer=optimizer,

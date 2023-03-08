@@ -13,6 +13,7 @@ def experiment(
         batch_size: int = 2000,
         num_of_epochs: int = 5,
         verbose: bool = False,
+        device:str = 'cpu',
 ) -> Tuple[normal.NormalSample, MutualInformation]:
     ns: normal.NormalSample = normal.NormalSample(ns_input)
     mi: MutualInformation = base.experiment(
@@ -24,6 +25,7 @@ def experiment(
         batch_size=batch_size,
         num_of_epochs=num_of_epochs,
         verbose=verbose,
+        device=device,
     )
     learnt_mi: float = mi()
     print('\n\n\n')
@@ -44,6 +46,7 @@ def independent_univariates(
         batch_size: int = 2000,
         num_of_epochs: int = 5,
         verbose: bool = False,
+        device:str = 'cpu',
 ) -> Tuple[normal.NormalSample, MutualInformation]:
     assert v_0 > 0
     assert v_1 > 0
@@ -51,6 +54,7 @@ def independent_univariates(
     ns_input = normal.NormalSampleInput(
         sigma=sigma,
         number_of_samples=number_of_samples,
+        device=device,
     )
     return experiment(
         ns_input=ns_input,
@@ -60,6 +64,7 @@ def independent_univariates(
         batch_size=batch_size,
         num_of_epochs=num_of_epochs,
         verbose=verbose,
+        device=device,
     )
 
 
@@ -74,6 +79,7 @@ def multivariates(
         batch_size: int = 2000,
         num_of_epochs: int = 5,
         verbose: bool = False,
+        device:str = 'cpu',
 ) -> Tuple[normal.NormalSample, MutualInformation]:
     if sigma is None:
         assert dim_x is not None
@@ -87,6 +93,7 @@ def multivariates(
         dim_x=dim_x,
         dim_y=dim_y,
         number_of_samples=number_of_samples,
+        device=device,
     )
     return experiment(
         ns_input=ns_input,
@@ -96,6 +103,7 @@ def multivariates(
         batch_size=batch_size,
         num_of_epochs=num_of_epochs,
         verbose=verbose,
+        device=device,
     )
 
 
