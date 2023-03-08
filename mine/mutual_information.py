@@ -22,11 +22,13 @@ class MutualInformation:
             )
         )
         test_function = test_function.to(device)
-        self.test_function = test_function
-#         self.test_function = torch.jit.trace(
-#                 test_function,
-#                 torch.rand(100, dim, dtype=dtype)
-#         )
+        if isinstance(test_function, torch.jit.TracedModule):
+            self.test_function = test_function
+        else:
+            self.test_function = torch.jit.trace(
+                    test_function,
+                    torch.rand(100, dim, dtype=dtype)
+            )
         assert empirical_sample_size > 0
         self.sampler: DataLoader = DataLoader(
             self.dataset,
