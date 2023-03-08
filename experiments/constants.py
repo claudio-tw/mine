@@ -2,7 +2,7 @@ import torch
 
 
 # The following parameters, when 
-# passed to tests.normal.multivariates, 
+# passed to experiments.normal.multivariates, 
 # give an error in the out-of-sample i
 # estimated mutual information 
 # smaller than 1.7%
@@ -20,7 +20,7 @@ normal = dict(
 
 
 # The following parameters, when 
-# passed to tests.normal.smile, 
+# passed to experiments.normal.smile, 
 # give a good match of
 # estimated mutual information 
 # with the thoretical quantity
@@ -39,7 +39,7 @@ normal_smile = dict(
 
 
 # The following parameters, when 
-# passed to tests.normal.smile, 
+# passed to experiments.normal.smile, 
 # give a good inequality
 # between mutual information of 
 # all noise projection
